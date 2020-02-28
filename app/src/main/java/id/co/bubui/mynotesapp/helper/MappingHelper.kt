@@ -21,4 +21,18 @@ object MappingHelper {
 
         return noteList
     }
+
+    fun mapCursorToObject(notesCursor: Cursor?): Note {
+        var note = Note()
+        notesCursor?.apply {
+            moveToFirst()
+            val id = getInt(getColumnIndexOrThrow(DatabaseContract.NoteColumns._ID))
+            val title = getString(getColumnIndexOrThrow(DatabaseContract.NoteColumns.TITLE))
+            val description =
+                getString(getColumnIndexOrThrow(DatabaseContract.NoteColumns.DESCRIPTION))
+            val date = getString(getColumnIndexOrThrow(DatabaseContract.NoteColumns.DESCRIPTION))
+            note = Note(id, title, description, date)
+        }
+        return note
+    }
 }

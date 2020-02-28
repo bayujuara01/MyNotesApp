@@ -2,6 +2,7 @@ package id.co.bubui.mynotesapp
 
 import android.content.ContentValues
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -13,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import id.co.bubui.mynotesapp.db.DatabaseContract
 import id.co.bubui.mynotesapp.db.NoteHelper
 import id.co.bubui.mynotesapp.entity.Note
+import id.co.bubui.mynotesapp.helper.MappingHelper
 import kotlinx.android.synthetic.main.activity_note_add_update.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -39,6 +41,7 @@ class NoteAddUpdateActivity : AppCompatActivity(), View.OnClickListener {
     private var position: Int = 0
 
     private var noteHelper: NoteHelper? = null
+    private lateinit var uriWithId: Uri
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,6 +62,16 @@ class NoteAddUpdateActivity : AppCompatActivity(), View.OnClickListener {
         val btnTitle: String
 
         if (isEdit) {
+            // Uri yang di dapatkan disini akan digunakan untuk ambil data dari provider
+            uriWithId =
+                Uri.parse(DatabaseContract.NoteColumns.CONTENT_URI.toString() + "/${note?.id}")
+
+            val cursor = contentResolver.query(uriWithId, null, null, null, null)
+            if (cursor != null) {
+                note = MappingHelper.mapCursorToObject(cursor)
+                cursor.close()
+            }
+
             actionBarTitle = "Ubah"
             btnTitle = "Update"
 
@@ -101,39 +114,19 @@ class NoteAddUpdateActivity : AppCompatActivity(), View.OnClickListener {
             values.put(DatabaseContract.NoteColumns.DESCRIPTION, description)
 
             if (isEdit) {
-                val result = noteHelper?.update(note?.id.toString(), values)?.toLong()
-                if (result != null) {
-                    if (result > 0) {
-                        setResult(RESULT_UPDATE, intent)
-                        finish()
-                    } else {
-                        Toast.makeText(
-                            this@NoteAddUpdateActivity,
-                            "Gagal update Data",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
+                // Gunakan uriWithId untuk Update
+                contentResolver.update(uriWithId, values, null, null)
+                Toast.makeText(this, "Satu item berhasil diedit", Toast.LENGTH_SHORT).show()
+                finish()
             } else {
                 val currentDate = getCurrentDate()
                 note?.date = currentDate
                 values.put(DatabaseContract.NoteColumns.DATE, currentDate)
-                val result = noteHelper?.insert(values)
-                Log.d("isAdd", "After Result : $result")
-                if (result != null) {
-                    Log.d("RESULT", "$result")
-                    if (result > 0) {
-                        note?.id = result.toInt()
-                        setResult(RESULT_ADD, intent)
-                        finish()
-                    } else {
-                        Toast.makeText(
-                            this@NoteAddUpdateActivity,
-                            "Gagal menambah Data",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
+
+                contentResolver.insert(DatabaseContract.NoteColumns.CONTENT_URI, values)
+                Toast.makeText(this, "Satu item berhasil disimpan", Toast.LENGTH_SHORT).show()
+                Log.d("isAdd", "After Result : result")
+                finish()
             }
         }
     }
