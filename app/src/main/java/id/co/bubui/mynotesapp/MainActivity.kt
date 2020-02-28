@@ -1,13 +1,17 @@
 package id.co.bubui.mynotesapp
 
 import android.content.Intent
+import android.database.ContentObserver
 import android.os.Bundle
+import android.os.Handler
+import android.os.HandlerThread
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import id.co.bubui.mynotesapp.adapter.NoteAdapter
+import id.co.bubui.mynotesapp.db.DatabaseContract.NoteColumns.Companion.CONTENT_URI
 import id.co.bubui.mynotesapp.db.NoteHelper
 import id.co.bubui.mynotesapp.entity.Note
 import id.co.bubui.mynotesapp.helper.MappingHelper
@@ -40,8 +44,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         fab_add.setOnClickListener(this)
 
-        noteHelper = NoteHelper.getInstance(applicationContext)
-        noteHelper?.open()
+        val handlerThread = HandlerThread("DataObserver")
+        handlerThread.start()
+        val handler = Handler(handlerThread.looper)
+
+        val myObserver = object : ContentObserver(handler) {
+            override fun onChange(selfChange: Boolean) {
+                loadNotesAsync()
+            }
+        }
+
+        contentResolver.registerContentObserver(CONTENT_URI, true, myObserver)
 
         if (savedInstanceState != null) {
             val list = savedInstanceState.getParcelableArrayList<Note>(EXTRA_STATE)
@@ -61,7 +74,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         GlobalScope.launch(Dispatchers.Main) {
             progress_bar.visibility = View.VISIBLE
             val deferredNotes = async(Dispatchers.IO) {
-                val cursor = noteHelper?.queryAll()
+                val cursor = contentResolver?.query(CONTENT_URI, null, null, null, null)
                 MappingHelper.mapCursorToArrayList(cursor)
             }
             progress_bar.visibility = View.GONE
