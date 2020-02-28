@@ -12,7 +12,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import id.co.bubui.consumerapp.db.DatabaseContract
-import id.co.bubui.consumerapp.db.NoteHelper
 import id.co.bubui.consumerapp.entity.Note
 import id.co.bubui.consumerapp.helper.MappingHelper
 import kotlinx.android.synthetic.main.activity_note_add_update.*
@@ -40,15 +39,15 @@ class NoteAddUpdateActivity : AppCompatActivity(), View.OnClickListener {
     private var note: Note? = null
     private var position: Int = 0
 
-    private var noteHelper: NoteHelper? = null
+    //private var noteHelper: NoteHelper? = null
     private lateinit var uriWithId: Uri
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_note_add_update)
 
-        noteHelper = NoteHelper.getInstance(applicationContext)
-        noteHelper.open()
+        // noteHelper = NoteHelper.getInstance(applicationContext)
+        // noteHelper.open()
 
         note = intent.getParcelableExtra(EXTRA_NOTE)
         if (note != null) {
@@ -169,21 +168,21 @@ class NoteAddUpdateActivity : AppCompatActivity(), View.OnClickListener {
                 if (isDialogClose) {
                     finish()
                 } else {
-                    val result = noteHelper.deleteById(note?.id.toString()).toLong()
-                    if (result != null) {
-                        if (result > 0) {
-                            val intent = Intent()
-                            intent.putExtra(EXTRA_POSITION, position)
-                            setResult(RESULT_DELETE, intent)
-                            finish()
-                        } else {
-                            Toast.makeText(
-                                this@NoteAddUpdateActivity,
-                                "Gagal menghapus data",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    }
+//                    val result = noteHelper.deleteById(note?.id.toString()).toLong()
+//                    if (result != null) {
+//                        if (result > 0) {
+//                            val intent = Intent()
+//                            intent.putExtra(EXTRA_POSITION, position)
+//                            setResult(RESULT_DELETE, intent)
+//                            finish()
+//                        } else {
+//                            Toast.makeText(
+//                                this@NoteAddUpdateActivity,
+//                                "Gagal menghapus data",
+//                                Toast.LENGTH_SHORT
+//                            ).show()
+//                        }
+//                    }
                 }
             }
             .setNegativeButton("Tidak") { dialog, id ->
