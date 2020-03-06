@@ -1,4 +1,4 @@
-package id.co.bubui.mynotesapp.db
+package id.co.bubui.consumerapp.db
 
 import android.net.Uri
 import android.provider.BaseColumns

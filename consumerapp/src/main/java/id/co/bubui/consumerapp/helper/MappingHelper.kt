@@ -1,8 +1,8 @@
-package id.co.bubui.mynotesapp.helper
+package id.co.bubui.consumerapp.helper
 
 import android.database.Cursor
-import id.co.bubui.mynotesapp.db.DatabaseContract
-import id.co.bubui.mynotesapp.entity.Note
+import id.co.bubui.consumerapp.db.DatabaseContract
+import id.co.bubui.consumerapp.entity.Note
 
 object MappingHelper {
     fun mapCursorToArrayList(notesCursor: Cursor?): ArrayList<Note> {

@@ -1,4 +1,4 @@
-package id.co.bubui.mynotesapp
+package id.co.bubui.consumerapp
 
 import android.content.Intent
 import android.database.ContentObserver
@@ -10,11 +10,10 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
-import id.co.bubui.mynotesapp.adapter.NoteAdapter
-import id.co.bubui.mynotesapp.db.DatabaseContract.NoteColumns.Companion.CONTENT_URI
-import id.co.bubui.mynotesapp.db.NoteHelper
-import id.co.bubui.mynotesapp.entity.Note
-import id.co.bubui.mynotesapp.helper.MappingHelper
+import id.co.bubui.consumerapp.adapter.NoteAdapter
+import id.co.bubui.consumerapp.db.DatabaseContract.NoteColumns.Companion.CONTENT_URI
+import id.co.bubui.consumerapp.entity.Note
+import id.co.bubui.consumerapp.helper.MappingHelper
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -28,13 +27,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private lateinit var adapter: NoteAdapter
-    private var noteHelper: NoteHelper? = null
+    //private var noteHelper: NoteHelper? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        supportActionBar?.title = "Notes"
+        supportActionBar?.title = "Consumer Notes"
 
         rv_notes.layoutManager = LinearLayoutManager(this)
         rv_notes.setHasFixedSize(true)
@@ -143,8 +142,4 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         Snackbar.make(rv_notes, message, Snackbar.LENGTH_SHORT).show()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        noteHelper?.close()
-    }
 }
